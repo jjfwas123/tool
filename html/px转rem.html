@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>px转rem</title>
+    <style>
+        #pxinput {
+            width: 30px;
+        }
+        #switch{
+            margin-left: 20px;
+        }
+        p {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <p>px转rem工具</p>
+    <p>提示：不处理1px！</p>
+    <p >1rem = <input type="text" id="pxinput">px <button id="switch" onclick="startSwitch()">开始转换</button><button style="margin-left: 20px;" id="unswitch" onclick="unStart()">逆转换（rem转px）</button></p>
+    <p ><textarea name="" id="origin" cols="150" rows="30"></textarea></p>
+    <p ><textarea name="" id="output" cols="150" rows="30"></textarea></p>
+    
+    <script>
+
+    //         document.getElementById('origin').value = `      .section {
+    //     height: 370px;
+    //     width: 370px;
+    //     margin: 17px;
+    //     position: relative;
+    //     background: #fff;
+    //     cursor: pointer;
+    //   }
+    //   .section:hover {
+    //     box-shadow:1px 2px 4px 2px rgba(214,197,184,0.5);
+    //   }`;
+        function parse(text,p) {
+            var regx = /\d+(px|PX)/;
+            var arr = regx.exec(text);
+            if(arr === null) return text;
+            if(parseInt(arr[0]) === 1) {
+                return text.replace(/\d+(px|PX)/, 'my$');
+            } else {
+                return text.replace(/\d+(px|PX)/, (parseInt(arr[0])/p)+ 'rem');
+            }
+        }
+        function startSwitch() {
+            var v = document.getElementById('origin').value;
+            var p = document.getElementById('pxinput').value;
+            if(parseInt(p) !== NaN && parseInt(p) > 0) {
+                while(v.indexOf('px') > -1) {
+                    v = parse(v,p)
+                }
+                v = v.replace(/my\$/g,'1px')
+                document.getElementById('output').value = v;
+            }
+        }
+        function unparse(v,p) {
+            var regx = /((\d+\.\d+)|(\d+))(rem|REM)/;
+            var arr = regx.exec(v);
+            console.log(parseFloat(arr[0]))
+            if(arr === null) return v;
+            return v.replace(/((\d+\.\d+)|(\d+))(rem|REM)/, Math.round(parseFloat(arr[0])*p)+ 'px');
+        }
+        function unStart() {
+            var v = document.getElementById('origin').value;
+            var p = document.getElementById('pxinput').value;
+            while(v.indexOf('rem') > -1) {
+                v = unparse(v,p)
+            }
+            // v = unparse(v,p)
+            document.getElementById('output').value = v;
+        }
+    </script>
+</body>
+</html>
