@@ -1,0 +1,29 @@
+export function search2Object (string) {
+  let obj = {}, hashString
+  if (typeof string === 'string') {
+    hashString = string;
+  } else {
+    let windowHash = window.location.hash.substring(1).split("?")
+    hashString = windowHash.length === 2 ? windowHash[1]: '';
+  }
+  if (typeof hashString === 'string' && hashString.indexOf('?') !== -1) hashString = hashString.split("?")[1];
+  let arr = typeof hashString === 'string' && hashString.indexOf('=') !== -1 ? hashString.split('&') : []
+  arr.forEach(item => {
+      let newArr = (item||'').split('=');
+      if (newArr[0]) obj[newArr[0]] = newArr[1];
+  })
+  return obj;
+}
+
+export function object2Search(params) {
+  let paramStr = '';
+  Object.keys(params || {})
+      .forEach((item) => {
+          if (paramStr === '') {
+              paramStr = `${item}=${params[item]}`;
+          } else {
+              paramStr = `${paramStr}&${item}=${params[item]}`;
+          }
+      });
+  return paramStr;
+}

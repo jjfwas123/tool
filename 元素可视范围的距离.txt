@@ -1,0 +1,10 @@
+var object=document.getElementById('box');  
+rectObject = object.getBoundingClientRect();
+ 
+	rectObject.top：元素上边到视窗上边的距离;
+	rectObject.right：元素右边到视窗左边的距离;
+	rectObject.bottom：元素下边到视窗上边的距离;
+	rectObject.left：元素左边到视窗左边的距离;
+	rectObject.width：是元素自身的宽
+	rectObject.height是元素自身的高
+window.getComputedStyle(element) 返回元素所有CSS属性值

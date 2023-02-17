@@ -1,0 +1,34 @@
+
+function showLoading() {
+  $("#loading").show();
+  $("#loadingmsg").show()
+}
+function hideLoading() {
+  $("#loading").hide();
+  $("#loadingmsg").hide()
+}
+function loopLogin() {
+  $.ajax({
+    url: "/RegExam/elogin?resourceId=login",
+    dataType: "json",
+    cache: false,
+    async: true,
+    type: "POST",
+    data: {
+        name: $("#txtName").val(),
+        code: $("#txtCode").val(),
+        pwd: $("#txtPwd").val()
+    },
+    beforeSend: function() {
+        showLoading();
+    },
+    success: function(data) {
+        if (data == 1) {
+          hideLoading()
+            window.location.replace("/RegExam/switchPage?resourceId=view")
+        } else {
+          loopLogin()
+        }
+    }
+})
+}

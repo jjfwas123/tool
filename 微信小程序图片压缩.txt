@@ -1,0 +1,60 @@
+//将图片画在画布上并获取画好之后的图片的路径
+getCanvasImage(path,imageW,imageH,getImgSuccess){
+  wx.createSelectorQuery().select('#myCanvas').fields({node: true,size: true}).exec((res)=>{
+      const canvas = res[0].node
+      canvas.width = 5000
+      canvas.height = 5000
+      const image = canvas.createImage()
+      const ctx = canvas.getContext('2d') 
+      image.onload = () => {
+          ctx.drawImage(image, 0, 0, imageW, imageH)
+          setTimeout(() => {
+              wx.canvasToTempFilePath({
+                  canvas,
+                  fileType: 'jpg',
+                  quality: 0.8,
+                  destWidth: imageW,
+                  destHeight: imageH,
+                  width: imageW,
+                  height: imageH,
+                  success: getImgSuccess
+              })
+              
+          }, 150)
+      }
+      image.src = path
+    })
+},
+
+//主函数，默认限制大小1024kb即1mb,drawWidth是绘画区域的大小
+//初始值传入为画布自身的边长（我们这是一个正方形的画布）
+getLessLimitSizeImage(imagePath,limitSize=1024,scale,callback){
+  wx.getFileInfo({
+      filePath:imagePath,
+      success:({size})=>{
+          console.log("压缩前图片大小",size/1024,'kb');
+          //如果图片太大了走moreCallback
+          if(size > 1024*limitSize){
+              if (!scale) scale = (1024*limitSize / size).toFixed(2) - 0;
+              wx.getImageInfo({
+                src: imagePath,
+                success: ({width, height}) => {
+                  console.log('原始宽高',width, height, '压缩比例',scale);
+                  //trunc是去掉小数
+                  let imageW = Math.trunc(width*scale);
+                  let imageH = Math.trunc(height*scale);
+                  console.log('压缩后宽高', imageW, imageH);
+                  //图片在规定绘画区域上画并获取新的图片的path
+                  this.getCanvasImage(imagePath, imageW, imageH, ({tempFilePath})=>{
+                      this.getLessLimitSizeImage(tempFilePath,limitSize,0.85,callback);
+                  })
+                }
+              })
+          } else{
+              //满足要求走callback，将压缩后的文件路径返回
+              console.log('压缩完成')
+              callback(imagePath);
+          }
+      }
+  })
+},
